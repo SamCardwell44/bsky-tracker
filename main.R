@@ -1,4 +1,5 @@
 install.packages("curl")
+install.packages("jsonlite")
 library(curl)
 install.packages("httr2")
 library(httr2)
