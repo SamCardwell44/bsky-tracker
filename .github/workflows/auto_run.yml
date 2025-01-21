@@ -46,7 +46,7 @@ jobs:
           git commit -m "Committing updates to Excel files" || echo "No changes to commit"
           
           # Fetch and pull latest changes from remote (to ensure we're not overwriting anything)
-          git pull --rebase origin main
+          #git pull --rebase origin main
 
           # Stage the updated Excel files
           git add bsky_followers.xlsx bsky_posts.xlsx
