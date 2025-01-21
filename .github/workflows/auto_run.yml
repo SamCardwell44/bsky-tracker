@@ -3,25 +3,26 @@ name: Daily R Script Run
 on:
   schedule:
     - cron: '0 0 * * *'  # This runs the workflow every day at midnight UTC
-  workflow_dispatch:
+  workflow_dispatch:  # This allows you to manually trigger the workflow from GitHub
 
 jobs:
   run_r_script:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  # Use the latest version of Ubuntu for the job
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2  # This checks out your code from the GitHub repository
 
       - name: Set up R
-        uses: r-lib/actions/setup-r@v2
+        uses: r-lib/actions/setup-r@v2  # This sets up R on the runner environment
         with:
-          r-version: '4.2'
+          r-version: '4.2'  # You can specify the R version you need
 
       - name: Install dependencies
         run: |
-          R -e "install.packages(c('atrrr', 'readxl', 'writexl'))"  # Run R command to install packages
+          install.packages("atrrr")  # Installing atrrr package separately
+          install.packages(c("readxl", "writexl"))  # Install the other required packages
 
       - name: Run R script
         run: |
-          Rscript main.R  # Run your main R script
+          Rscript main.R    # Run the R script
