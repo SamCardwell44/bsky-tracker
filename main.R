@@ -45,7 +45,7 @@ update_data <- function(follower_data, post_data, follower_file = "bsky_follower
     tryCatch({
       # Get followers and posts info only once
       info <- get_info(account)
-      
+      cat(nrow(info$followers),"\n")
       # Update the followers count
       new_row_followers[[account]] <- nrow(info$followers)
       
