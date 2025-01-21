@@ -34,3 +34,21 @@ jobs:
       - name: Run R script
         run: |
           Rscript main.R  # Run the R script
+          
+      - name: Commit and push updated Excel files
+        run: |
+          # Configure git with a username and email for the actions workflow
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Stage the updated Excel files
+          git add bsky_followers.xlsx bsky_posts.xlsx
+
+          # Commit the changes
+          git commit -m "Update followers and posts data"
+
+          # Push the changes back to the repository
+          git push origin HEAD:main
+        env:
+          # GitHub token for authentication
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
