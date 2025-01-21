@@ -41,6 +41,9 @@ jobs:
           git config --global user.name "github-actions"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
+          # Pull the latest changes to ensure the local branch is up-to-date
+          git pull origin main --rebase  # Fetch and rebase any remote changes
+
           # Stage the updated Excel files
           git add bsky_followers.xlsx bsky_posts.xlsx
 
