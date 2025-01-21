@@ -3,7 +3,6 @@ name: Daily R Script Run
 on:
   schedule:
     - cron: '45 6 * * *'  # This runs the workflow every day at 6:45 AM UTC (GMT)
-
   workflow_dispatch:  # This allows you to manually trigger the workflow from GitHub
 
 jobs:
@@ -12,12 +11,26 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2  # This checks out your code from the GitHub repository
+        uses: actions/checkout@v2
 
       - name: Set up R
-        uses: r-lib/actions/setup-r@v2  # This sets up R on the runner environment
+        uses: r-lib/actions/setup-r@v2
         with:
-          r-version: '4.2'  # You can specify the R version you need
+          r-version: '4.2'
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libcurl4-openssl-dev libssl-dev libhts-dev  # Install required system libraries
+
+      - name: Install dependencies for atrrr
+        run: |
+          R -e "install.packages(c('curl', 'httr2'), repos = 'https://cloud.r-project.org/')"  # Install required packages
+
+      - name: Install 'atrrr' from CRAN
+        run: |
+          R -e "install.packages('atrrr', repos = 'https://cloud.r-project.org/')"  # Install 'atrrr'
+
       - name: Run R script
         run: |
-          Rscript main.R    # Run the R script
+          Rscript main.R  # Run the R script
