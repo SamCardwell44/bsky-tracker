@@ -1,5 +1,7 @@
 install.packages("curl")
+library(curl)
 install.packages("httr2")
+library(httr2)
 install.packages("atrrr")
 install.packages(c('readxl', 'writexl'))
 library(atrrr)
