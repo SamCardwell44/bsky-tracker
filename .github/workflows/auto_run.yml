@@ -18,18 +18,18 @@ jobs:
         with:
           r-version: '4.2'
 
-      - name: Install system dependencies
+      - name: Install system dependencies (libcurl and libssl)
         run: |
           sudo apt-get update
-          sudo apt-get install -y libcurl4-openssl-dev libssl-dev libhts-dev  # Install required system libraries
+          sudo apt-get install -y libcurl4-openssl-dev libssl-dev  # Install necessary system libraries
 
       - name: Install dependencies for atrrr
         run: |
-          R -e "install.packages(c('curl', 'httr2'), repos = 'https://cloud.r-project.org/')"  # Install required packages
+          R -e "install.packages(c('curl', 'httr2'), repos = 'https://cloud.r-project.org/')"  # Install required R packages
 
       - name: Install 'atrrr' from CRAN
         run: |
-          R -e "install.packages('atrrr', repos = 'https://cloud.r-project.org/')"  # Install 'atrrr'
+          R -e "install.packages('atrrr', repos = 'https://cloud.r-project.org/')"  # Install 'atrrr' package
 
       - name: Run R script
         run: |
