@@ -1,4 +1,4 @@
-install.packages('atrrr')
+remotes::install_github("JBGruber/atrrr")
 install.packages(c('readxl', 'writexl'))
 library(atrrr)
 library(readxl)
