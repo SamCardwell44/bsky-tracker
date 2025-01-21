@@ -41,11 +41,71 @@ jobs:
           git config --global user.name "github-actions"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
+          # Pull the latest changes to ensure the local branch is up-to-date
+          git pull origin main --rebase  # Fetch and rebase any remote changes
+
           # Stage the updated Excel files
           git add bsky_followers.xlsx bsky_posts.xlsx
 
           # Commit the changes
-          git commit -m "Update followers and posts data"
+          git commit -m "Update followers and posts data" || echo "No changes to commit"
+
+          # Push the changes back to the repository
+          git push origin HEAD:main
+        env:
+          # GitHub token for authentication
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+name: Daily R Script Run
+
+on:
+  schedule:
+    - cron: '45 6 * * *'  # This runs the workflow every day at 6:45 AM UTC (GMT)
+  workflow_dispatch:  # This allows you to manually trigger the workflow from GitHub
+
+jobs:
+  run_r_script:
+    runs-on: ubuntu-latest  # Use the latest version of Ubuntu for the job
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: '4.2'
+
+      - name: Install system dependencies (libcurl and libssl)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libcurl4-openssl-dev libssl-dev  # Install necessary system libraries
+
+      - name: Install dependencies for atrrr
+        run: |
+          R -e "install.packages(c('curl', 'httr2'), repos = 'https://cloud.r-project.org/')"  # Install required R packages
+
+      - name: Install 'atrrr' from CRAN
+        run: |
+          R -e "install.packages('atrrr', repos = 'https://cloud.r-project.org/')"  # Install 'atrrr' package
+
+      - name: Run R script
+        run: |
+          Rscript main.R  # Run the R script
+          
+      - name: Commit and push updated Excel files
+        run: |
+          # Configure git with a username and email for the actions workflow
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Pull the latest changes to ensure the local branch is up-to-date
+          git pull origin main --rebase  # Fetch and rebase any remote changes
+
+          # Stage the updated Excel files
+          git add bsky_followers.xlsx bsky_posts.xlsx
+
+          # Commit the changes
+          git commit -m "Update followers and posts data" || echo "No changes to commit"
 
           # Push the changes back to the repository
           git push origin HEAD:main
