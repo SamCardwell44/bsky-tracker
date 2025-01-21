@@ -17,12 +17,6 @@ jobs:
         uses: r-lib/actions/setup-r@v2  # This sets up R on the runner environment
         with:
           r-version: '4.2'  # You can specify the R version you need
-
-      - name: Install dependencies
-        run: |
-          R -e "install.packages('atrrr')"  # Install the 'atrrr' package in R
-          R -e "install.packages(c('readxl', 'writexl'))"  # Install other required packages in R
-
       - name: Run R script
         run: |
           Rscript main.R    # Run the R script
