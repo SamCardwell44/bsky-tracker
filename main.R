@@ -83,12 +83,15 @@ update_data <- function(follower_data, post_data, follower_file = "bsky_follower
 
 # Load existing data or initialize new data frames
 bsky_followers <- tryCatch(read_xlsx("bsky_followers.xlsx"), error = function(e) data.frame(date = character()))
-bsky_posts <- tryCatch(read_xlsx("bsky_posts.xlsx"), error = function(e) data.frame(date = character())
+bsky_posts <- tryCatch(read_xlsx("bsky_posts.xlsx"), error = function(e) data.frame(date = character()))
+
 # Update both followers and posts
 updated_data <- update_data(bsky_followers, bsky_posts, "bsky_followers.xlsx", "bsky_posts.xlsx")
 
 # Separate updated followers and posts
 bsky_followers <- updated_data$followers
 bsky_posts <- updated_data$posts
+
+# Preview data
 head(bsky_followers)
 head(bsky_posts)
