@@ -2,7 +2,8 @@ name: Daily R Script Run
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # This runs the workflow every day at midnight UTC
+    - cron: '45 6 * * *'  # This runs the workflow every day at 6:45 AM UTC (GMT)
+
   workflow_dispatch:  # This allows you to manually trigger the workflow from GitHub
 
 jobs:
