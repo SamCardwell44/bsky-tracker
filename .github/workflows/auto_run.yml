@@ -20,8 +20,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          install.packages("atrrr")  # Installing atrrr package separately
-          install.packages(c("readxl", "writexl"))  # Install the other required packages
+          R -e "install.packages('atrrr')"  # Install the 'atrrr' package in R
+          R -e "install.packages(c('readxl', 'writexl'))"  # Install other required packages in R
 
       - name: Run R script
         run: |
