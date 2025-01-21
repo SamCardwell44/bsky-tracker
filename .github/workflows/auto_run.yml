@@ -34,15 +34,19 @@ jobs:
       - name: Run R script
         run: |
           Rscript main.R  # Run the R script
-          
+
       - name: Commit and push updated Excel files
         run: |
           # Configure git with a username and email for the actions workflow
           git config --global user.name "github-actions"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
-          # Pull the latest changes to ensure the local branch is up-to-date
-          git pull origin main --rebase  # Fetch and rebase any remote changes
+          
+          # Ensure there are no unstaged changes by committing them
+          git add .
+          git commit -m "Committing updates to Excel files" || echo "No changes to commit"
+          
+          # Fetch and pull latest changes from remote (to ensure we're not overwriting anything)
+          git pull --rebase origin main
 
           # Stage the updated Excel files
           git add bsky_followers.xlsx bsky_posts.xlsx
