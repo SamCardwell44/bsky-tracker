@@ -8,6 +8,9 @@ library(atrrr)
 library(readxl)
 library(writexl)
 
+# Authentication
+auth("samcardwell44.bsky.social", "qioa-udz7-77ck-q5t5", overwrite = TRUE)
+
 # Get info for a specific handle (followers and posts)
 get_info <- function(handle, limitnum = 10000) {
   handle <- as.character(handle)
