@@ -62,7 +62,7 @@ update_data <- function(follower_data, post_data, follower_file = "bsky_follower
       new_row_posts[[account]] <- NA
     })
   }
-  
+  head(new_row_followers)
   # Update or append rows for followers
   if (current_date %in% follower_data$date) {
     follower_data[follower_data$date == current_date, ] <- new_row_followers
