@@ -1,3 +1,5 @@
+install.packages('atrrr')
+install.packages(c('readxl', 'writexl'))
 library(atrrr)
 library(readxl)
 library(writexl)
