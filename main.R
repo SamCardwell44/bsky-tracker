@@ -12,22 +12,31 @@ library(writexl)
 # Authentication
 auth("samjourno.bsky.social", "j4ex-4ake-oelh-74do", overwrite = TRUE)
 
-# Get info for a specific handle (followers and posts)
 get_info <- function(handle, limitnum = 10) {
-  handle <- as.character(handle)
-  
-  # Get followers
-  followers <- get_followers(actor = handle, limit = limitnum)
-  
-  # Get posts
-  posts <- get_skeets_authored_by(actor = handle, limit = limitnum)
-  
-  # Save followers and posts as global variables for optional use
-  assign(paste0(gsub("[^a-zA-Z0-9]", "_", handle), "_followersdf"), followers, envir = .GlobalEnv)
-  assign(paste0(gsub("[^a-zA-Z0-9]", "", handle), "_posts_df"), posts, envir = .GlobalEnv)
-  
-  # Return a list containing both followers and posts
-  return(list(followers = followers, posts = posts))
+  tryCatch({
+    handle <- as.character(handle)
+    
+    # Get followers with explicit numeric conversion
+    followers <- get_followers(actor = handle, limit = limitnum)
+    follower_count <- as.numeric(nrow(followers))
+    if(is.na(follower_count)) follower_count <- 0
+    
+    # Get posts with explicit numeric conversion
+    posts <- get_skeets_authored_by(actor = handle, limit = limitnum)
+    post_count <- as.numeric(nrow(posts))
+    if(is.na(post_count)) post_count <- 0
+    
+    return(list(
+      followers = follower_count,
+      posts = post_count
+    ))
+  }, error = function(e) {
+    message("Error in get_info for handle ", handle, ": ", e$message)
+    return(list(
+      followers = 0,
+      posts = 0
+    ))
+  })
 }
 # General update function for both followers and posts
 update_data <- function(follower_data, post_data, follower_file = "bsky_followers.xlsx", post_file = "bsky_posts.xlsx") {
