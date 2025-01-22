@@ -77,10 +77,20 @@ update_data <- function(follower_data, post_data, follower_file = "bsky_follower
     post_data <- rbind(post_data, new_row_posts)
   }
   
+  print("Current working directory:")
+  print(getwd())
+  print("Data preview before saving:")
+  print(head(follower_data))
+  print(head(post_data))
+  
   # Save the updated data frames
   write_xlsx(follower_data, follower_file)
   write_xlsx(post_data, post_file)
-  
+
+  print("Checking if files were saved:")
+  print(file.exists("bsky_followers.xlsx"))
+  print(file.exists("bsky_posts.xlsx"))
+
   # Return the updated data frames
   return(list(followers = follower_data, posts = post_data))
 }
