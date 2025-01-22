@@ -23,15 +23,20 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libcurl4-openssl-dev libssl-dev
+          sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev
 
       - name: Install R packages
         run: |
-          R -e 'install.packages(c("curl", "jsonlite", "httr2", "atrrr", "readxl", "writexl"), repos="https://cloud.r-project.org/")'
+          R -e 'install.packages(c("curl", "jsonlite", "httr2", "atrrr", "readxl", "writexl","dplyr"), repos="https://cloud.r-project.org/")'
           
       - name: Run R script
         run: Rscript main.R
-        
+      - name: Debugging information
+        run: |
+          R -e 'sessionInfo()'
+          ls -la
+      - name: Delay to ensure files are ready
+        run: sleep 5  
       - name: Commit and push if there are changes
         run: |
           git config --global user.name "github-actions[bot]"
