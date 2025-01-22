@@ -49,7 +49,7 @@ update_data <- function(follower_data, post_data, follower_file = "bsky_follower
   new_row_posts <- data.frame(date = current_date)
   
   # Get the accounts (columns excluding the date column)
-  accounts <- names(follower_data)[-1]  # Exclude 'date'
+  accounts <- setdiff(names(follower_data), "date")  # Exclude 'date'
   total_accounts <- length(accounts)
   
   for (i in seq_along(accounts)) {
@@ -59,12 +59,12 @@ update_data <- function(follower_data, post_data, follower_file = "bsky_follower
     tryCatch({
       # Get followers and posts info only once
       info <- get_info(account)
-      cat(nrow(info$followers),"\n")
+      
       # Update the followers count
-      new_row_followers[[account]] <- nrow(info$followers)
+      new_row_followers[[account]] <- info$followers
       
       # Update the posts count
-      new_row_posts[[account]] <- nrow(info$posts)
+      new_row_posts[[account]] <- info$posts
       
     }, error = function(e) {
       warning(paste("Error processing account", account, ":", e$message))
@@ -72,6 +72,19 @@ update_data <- function(follower_data, post_data, follower_file = "bsky_follower
       new_row_posts[[account]] <- NA
     })
   }
+  
+  # Add missing columns to ensure alignment
+  for (account in setdiff(names(new_row_followers), names(follower_data))) {
+    follower_data[[account]] <- NA
+  }
+  for (account in setdiff(names(new_row_posts), names(post_data))) {
+    post_data[[account]] <- NA
+  }
+  
+  # Ensure column order matches
+  follower_data <- follower_data[, union(names(new_row_followers), names(follower_data))]
+  post_data <- post_data[, union(names(new_row_posts), names(post_data))]
+  
   # Update or append rows for followers
   if (current_date %in% follower_data$date) {
     follower_data[follower_data$date == current_date, ] <- new_row_followers
@@ -93,6 +106,7 @@ update_data <- function(follower_data, post_data, follower_file = "bsky_follower
   # Return the updated data frames
   return(list(followers = follower_data, posts = post_data))
 }
+
 # Load existing data or initialize new data frames
 bsky_followers <- tryCatch(read_xlsx("bsky_followers.xlsx"), error = function(e) data.frame(date = character()))
 bsky_posts <- tryCatch(read_xlsx("bsky_posts.xlsx"), error = function(e) data.frame(date = character()))
