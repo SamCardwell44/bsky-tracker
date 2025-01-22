@@ -4,10 +4,12 @@ library(curl)
 install.packages("httr2")
 library(httr2)
 install.packages("atrrr")
+install.packages("dplyr")
 install.packages(c('readxl', 'writexl'))
 library(atrrr)
 library(readxl)
 library(writexl)
+library(dplyr)
 
 # Authentication
 auth("samjourno.bsky.social", "j4ex-4ake-oelh-74do", overwrite = TRUE)
