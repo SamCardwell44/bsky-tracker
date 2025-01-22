@@ -14,7 +14,7 @@ library(dplyr)
 # Authentication
 auth("samjourno.bsky.social", "j4ex-4ake-oelh-74do", overwrite = TRUE)
 
-get_info <- function(handle, limitnum = 10) {
+get_info <- function(handle, limitnum = 10000) {
   tryCatch({
     handle <- as.character(handle)
     
