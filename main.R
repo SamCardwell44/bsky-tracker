@@ -84,6 +84,7 @@ update_data <- function(follower_data, post_data, follower_file = "bsky_follower
   # Ensure column order matches
   follower_data <- follower_data[, union(names(new_row_followers), names(follower_data))]
   post_data <- post_data[, union(names(new_row_posts), names(post_data))]
+
   
   # Update or append rows for followers
   if (current_date %in% follower_data$date) {
