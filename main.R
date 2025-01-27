@@ -14,7 +14,7 @@ library(dplyr)
 # Authentication
 auth("samjourno.bsky.social", "j4ex-4ake-oelh-74do", overwrite = TRUE)
 
-get_info <- function(handle, limitnum = 10000) {
+get_info <- function(handle, limitnum = 10000, previous_data = NULL) {
   tryCatch({
     handle <- as.character(handle)
     
@@ -27,6 +27,12 @@ get_info <- function(handle, limitnum = 10000) {
     posts <- get_skeets_authored_by(actor = handle, limit = limitnum)
     post_count <- as.numeric(nrow(posts))
     if(is.na(post_count)) post_count <- 0
+
+    
+    if (follower_count == 0) {
+      message("Follower count is 0, using previous day's value for ", handle)
+      follower_count <- previous_data$followers
+    }
     
     return(list(
       followers = follower_count,
@@ -51,6 +57,7 @@ update_data <- function(follower_data, post_data, follower_file = "bsky_follower
   # Get the accounts (columns excluding the date column)
   accounts <- setdiff(names(follower_data), "date")  # Exclude 'date'
   total_accounts <- length(accounts)
+  previous_data <- if (nrow(follower_data) > 1) follower_data[nrow(follower_data) - 1, ] else NULL
   
   for (i in seq_along(accounts)) {
     account <- accounts[i]
@@ -58,7 +65,7 @@ update_data <- function(follower_data, post_data, follower_file = "bsky_follower
     
     tryCatch({
       # Get followers and posts info only once
-      info <- get_info(account)
+      info <- get_info(account, previous_data = previous_data)
       
       # Update the followers count
       new_row_followers[[account]] <- info$followers
