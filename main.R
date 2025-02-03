@@ -22,17 +22,17 @@ get_info <- function(handle, limitnum = 10000, previous_data = NULL) {
     followers <- get_followers(actor = handle, limit = limitnum)
     follower_count <- as.numeric(nrow(followers))
     if(is.na(follower_count)) follower_count <- 0
+    if (follower_count == 0) {
+      message("Follower count is 0, using previous day's value for ", handle)
+      message("New value is:", previous_data$followers)
+      follower_count <- previous_data$followers
+    }
     
     # Get posts with explicit numeric conversion
     posts <- get_skeets_authored_by(actor = handle, limit = limitnum)
     post_count <- as.numeric(nrow(posts))
     if(is.na(post_count)) post_count <- 0
 
-    
-    if (follower_count == 0) {
-      message("Follower count is 0, using previous day's value for ", handle)
-      follower_count <- previous_data$followers
-    }
     
     return(list(
       followers = follower_count,
