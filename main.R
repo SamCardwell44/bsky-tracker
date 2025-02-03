@@ -15,70 +15,54 @@ library(dplyr)
 auth("samjourno.bsky.social", "j4ex-4ake-oelh-74do", overwrite = TRUE)
 
 get_info <- function(handle, limitnum = 10000, previous_data = NULL, retry_limit = 3, delay_sec = 5) {
-  tryCatch({
-    handle <- as.character(handle)
+  retries <- 0
+  
+  while (retries <= retry_limit) {
+    result <- tryCatch({
+      handle <- as.character(handle)
+      
+      # Get followers
+      followers <- get_followers(actor = handle, limit = limitnum)
+      follower_count <- as.numeric(nrow(followers))
+      if (is.na(follower_count)) follower_count <- 0
+      if (follower_count == 0 && !is.null(previous_data)) {
+        message("Follower count is 0, using previous day's value for ", handle)
+        follower_count <- previous_data$followers
+      }
+      
+      # Get posts
+      posts <- get_skeets_authored_by(actor = handle, limit = limitnum)
+      post_count <- as.numeric(nrow(posts))
+      if (is.na(post_count)) post_count <- 0
+      
+      return(list(
+        followers = follower_count,
+        posts = post_count
+      ))
+      
+    }, error = function(e) {
+      message("Error in get_info for handle ", handle, ": ", e$message)
+      return(NULL)  # Indicate failure
+    })
     
-    # Get followers with explicit numeric conversion
-    followers <- get_followers(actor = handle, limit = limitnum)
-    follower_count <- as.numeric(nrow(followers))
-    if(is.na(follower_count)) follower_count <- 0
-    if (follower_count == 0) {
-      message("Follower count is 0, using previous day's value for ", handle)
-      message("New value is:", previous_data$followers)
-      follower_count <- previous_data$followers
+    # If successful, return the result
+    if (!is.null(result)) {
+      return(result)
     }
     
-    # Get posts with explicit numeric conversion
-    posts <- get_skeets_authored_by(actor = handle, limit = limitnum)
-    post_count <- as.numeric(nrow(posts))
-    if(is.na(post_count)) post_count <- 0
-    
-    return(list(
-      followers = follower_count,
-      posts = post_count
-    ))
-  }, error = function(e) {
-    message("Error in get_info for handle ", handle, ": ", e$message)
-    
-    # Retry logic for upstream failure (HTTP 502 Bad Gateway)
-    retries <- 0
-    while (retries < retry_limit) {
+    # If failed, retry
+    if (retries < retry_limit) {
       retries <- retries + 1
       message(paste("Retrying (", retries, "/", retry_limit, ")...", sep = ""))
       Sys.sleep(delay_sec)  # Add delay before retrying
-      
-      tryCatch({
-        # Retry the request
-        followers <- get_followers(actor = handle, limit = limitnum)
-        follower_count <- as.numeric(nrow(followers))
-        if(is.na(follower_count)) follower_count <- 0
-        if (follower_count == 0) {
-          message("Follower count is 0, using previous day's value for ", handle)
-          message("New value is:", previous_data$followers)
-          follower_count <- previous_data$followers
-        }
-
-        posts <- get_skeets_authored_by(actor = handle, limit = limitnum)
-        post_count <- as.numeric(nrow(posts))
-        if(is.na(post_count)) post_count <- 0
-
-        return(list(
-          followers = follower_count,
-          posts = post_count
-        ))
-      }, error = function(e) {
-        message("Retry failed for handle ", handle, ": ", e$message)
-        # If max retries reached, return default values
-        if (retries == retry_limit) {
-          message("Max retries reached for handle ", handle, ". Returning default values.")
-          return(list(
-            followers = 0,
-            posts = 0
-          ))
-        }
-      })
+    } else {
+      message("Max retries reached for handle ", handle, ". Returning default values.")
+      break  # Exit the loop
     }
-  })
+  }
+  
+  # Fail-safe return after all retries
+  return(list(followers = 0, posts = 0))
 }
 # General update function for both followers and posts
 update_data <- function(follower_data, post_data, follower_file = "bsky_followers.xlsx", post_file = "bsky_posts.xlsx") {
