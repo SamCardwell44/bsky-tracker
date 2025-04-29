@@ -14,7 +14,7 @@ library(dplyr)
 # Authentication
 auth("samjourno.bsky.social", "j4ex-4ake-oelh-74do", overwrite = TRUE)
 
-get_info <- function(handle, limitnum = 10000, previous_data = NULL, retry_limit = 3, delay_sec = 5) {
+get_info <- function(handle, limitnum = 100000, previous_data = NULL, retry_limit = 3, delay_sec = 5) {
   retries <- 0
   
   while (retries <= retry_limit) {
