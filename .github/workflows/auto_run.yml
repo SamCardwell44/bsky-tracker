@@ -1,16 +1,17 @@
 name: Daily R Script Run
+
 on:
   schedule:
-    - cron: '45 6 * * *'  # Fixed: was missing one *
+    - cron: '45 6 * * *'  # Runs daily at 6:45 AM UTC
   workflow_dispatch:
 
 jobs:
   run_r_script:
-    runs-on: ubuntu-20.04  # Pin to Ubuntu 20.04 temporarily
+    runs-on: ubuntu-20.04
     
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4  # Updated to v4
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
           
@@ -23,45 +24,19 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev
-          
-      - name: Fix DNS resolution
-        run: |
-          # Add DNS servers to resolve bsky.social endpoints
-          echo "nameserver 8.8.8.8" | sudo tee -a /etc/resolv.conf
-          echo "nameserver 1.1.1.1" | sudo tee -a /etc/resolv.conf
-          # Test DNS resolution
-          nslookup bsky.social || echo "DNS resolution test failed"
-          
+
       - name: Install R packages
         run: |
-<<<<<<< HEAD
-          R -e 'install.packages(c("remotes", "jsonlite", "httr2", "readxl", "writexl", "dplyr"), repos = "https://cloud.r-project.org/")'
-          R -e 'remotes::install_version("curl", version = "4.3.2", repos = "https://cloud.r-project.org")'
-          R -e 'install.packages("atrrr", repos = "https://cloud.r-project.org")'
-=======
           R -e 'install.packages(c("curl", "jsonlite", "httr2", "atrrr", "readxl", "writexl","dplyr"), repos="https://cloud.r-project.org/")'
->>>>>>> parent of 43d3c97 (Fix curl version)
           
       - name: Run R script
         run: Rscript main.R
-        env:
-          BLUESKY_USERNAME: ${{ secrets.BLUESKY_USERNAME }}
-          BLUESKY_PASSWORD: ${{ secrets.BLUESKY_PASSWORD }}
-          
-      - name: Network debugging
+      - name: Debugging information
         run: |
-          echo "=== Network Configuration ==="
-          cat /etc/resolv.conf
-          echo "=== DNS Resolution Tests ==="
-          nslookup bsky.social || echo "bsky.social resolution failed"
-          nslookup public.api.bsky.app || echo "public.api.bsky.app resolution failed"
-          echo "=== Connectivity Tests ==="
-          curl -I https://bsky.social || echo "bsky.social connectivity failed"
-          curl -I https://public.api.bsky.app || echo "public.api.bsky.app connectivity failed"
-          
+          R -e 'sessionInfo()'
+          ls -la
       - name: Delay to ensure files are ready
         run: sleep 5  
-        
       - name: Commit and push if there are changes
         run: |
           git config --global user.name "github-actions[bot]"
