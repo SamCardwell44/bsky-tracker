@@ -28,6 +28,7 @@ jobs:
       - name: Install R packages
         run: |
           R -e 'install.packages(c("curl", "jsonlite", "httr2", "atrrr", "readxl", "writexl","dplyr"), repos="https://cloud.r-project.org/")'
+          R -e 'remotes::install_github("JBGruber/atrrr", force = TRUE)'  # Install latest dev version
           
       - name: Run R script
         run: Rscript main.R
