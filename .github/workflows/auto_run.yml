@@ -26,8 +26,11 @@ jobs:
           sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev
 
       - name: Install R packages
-        run: |
-          R -e 'install.packages(c("curl", "jsonlite", "httr2", "atrrr", "readxl", "writexl","dplyr"), repos="https://cloud.r-project.org/")'
+        - name: Install R packages (with curl pinned)
+      run: |
+        R -e 'install.packages(c("remotes", "jsonlite", "httr2", "readxl", "writexl", "dplyr"), repos = "https://cloud.r-project.org/")'
+        R -e 'remotes::install_version("curl", version = "4.3.2", repos = "https://cloud.r-project.org")'
+        R -e 'install.packages("atrrr", repos = "https://cloud.r-project.org")'
           
       - name: Run R script
         run: Rscript main.R
