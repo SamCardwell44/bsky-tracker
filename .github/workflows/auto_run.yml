@@ -34,9 +34,13 @@ jobs:
           
       - name: Install R packages
         run: |
+<<<<<<< HEAD
           R -e 'install.packages(c("remotes", "jsonlite", "httr2", "readxl", "writexl", "dplyr"), repos = "https://cloud.r-project.org/")'
           R -e 'remotes::install_version("curl", version = "4.3.2", repos = "https://cloud.r-project.org")'
           R -e 'install.packages("atrrr", repos = "https://cloud.r-project.org")'
+=======
+          R -e 'install.packages(c("curl", "jsonlite", "httr2", "atrrr", "readxl", "writexl","dplyr"), repos="https://cloud.r-project.org/")'
+>>>>>>> parent of 43d3c97 (Fix curl version)
           
       - name: Run R script
         run: Rscript main.R
