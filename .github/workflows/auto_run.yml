@@ -8,44 +8,45 @@ on:
 jobs:
   run_r_script:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          
+
       - name: Set up R
         uses: r-lib/actions/setup-r@v2
         with:
           r-version: '4.2'
-          
+
       - name: Install system dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev
 
-      - name: Install R packages
-        - name: Install R packages (with curl pinned)
-      run: |
-        R -e 'install.packages(c("remotes", "jsonlite", "httr2", "readxl", "writexl", "dplyr"), repos = "https://cloud.r-project.org/")'
-        R -e 'remotes::install_version("curl", version = "4.3.2", repos = "https://cloud.r-project.org")'
-        R -e 'install.packages("atrrr", repos = "https://cloud.r-project.org")'
-          
+      - name: Install R packages (with curl pinned)
+        run: |
+          R -e 'install.packages(c("remotes", "jsonlite", "httr2", "readxl", "writexl", "dplyr"), repos = "https://cloud.r-project.org")'
+          R -e 'remotes::install_version("curl", version = "4.3.2", repos = "https://cloud.r-project.org")'
+          R -e 'install.packages("atrrr", repos = "https://cloud.r-project.org")'
+
       - name: Run R script
         run: Rscript main.R
+
       - name: Debugging information
         run: |
           R -e 'sessionInfo()'
           ls -la
+
       - name: Delay to ensure files are ready
-        run: sleep 5  
+        run: sleep 5
+
       - name: Commit and push if there are changes
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          
-          # Check if there are changes to commit
+
           if [[ -n "$(git status --porcelain)" ]]; then
             git add bsky_followers.xlsx bsky_posts.xlsx
             git commit -m "Update followers and posts data [skip ci]"
