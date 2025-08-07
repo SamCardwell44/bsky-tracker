@@ -14,7 +14,7 @@ library(dplyr)
 # Authentication
 auth("zylo42.bsky.social", "j4ex-4ake-oelh-74do", overwrite = TRUE)
 
-get_info <- function(handle, limitnum = 10000, previous_data = NULL, retry_limit = 3, delay_sec = 5) {
+get_info <- function(handle, limitnum = 10, previous_data = NULL, retry_limit = 3, delay_sec = 5) {
   retries <- 0
   
   while (retries <= retry_limit) {
@@ -109,6 +109,10 @@ update_data <- function(follower_data, post_data, follower_file = "bsky_follower
   # Ensure column order matches
   follower_data <- follower_data[, union(names(new_row_followers), names(follower_data))]
   post_data <- post_data[, union(names(new_row_posts), names(post_data))]
+  
+  #debug print column orders
+  cat("Follower Data Columns:", paste(names(follower_data), collapse = ", "), "\n")
+  cat("Post Data Columns:", paste(names(post_data), collapse = ", "), "\n")
 
   
   # Update or append rows for followers
